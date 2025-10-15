@@ -48,15 +48,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Disclaimer - Shows initially, moves to bottom when content is revealed */}
+      {/* Spacer - maintains layout before content is revealed */}
       {!isContentRevealed && (
         <section className="container mx-auto px-4 py-6 md:py-8">
           <div className="max-w-2xl mx-auto text-center">
-            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-              As informações fornecidas neste site são utilizadas apenas para oferecer uma experiência personalizada. 
-              Este site não é afiliado ao Facebook ou à Meta Inc. Resultados podem variar de pessoa para pessoa. 
-              Seus dados estão protegidos: nunca enviamos spam ou compartilhamos informações com terceiros.
-            </p>
+            {/* Empty space to maintain layout */}
           </div>
         </section>
       )}
@@ -250,20 +246,16 @@ const Index = () => {
             <a href="#" className="hover:text-foreground transition-colors">Política de Privacidade</a>
           </p>
           
-          {/* Disclaimer appears here after content is revealed */}
-          {isContentRevealed && (
-            <>
-              <p className="max-w-2xl mx-auto">
-                As informações fornecidas neste site são utilizadas apenas para oferecer uma experiência personalizada.
-              </p>
-              <p className="max-w-2xl mx-auto">
-                Este site não é afiliado ao Facebook ou à Meta Inc. Resultados podem variar de pessoa para pessoa.
-              </p>
-              <p className="max-w-2xl mx-auto">
-                Seus dados estão protegidos: nunca enviamos spam ou compartilhamos informações com terceiros.
-              </p>
-            </>
-          )}
+          {/* Disclaimer always visible */}
+          <p className="max-w-2xl mx-auto">
+            As informações fornecidas neste site são utilizadas apenas para oferecer uma experiência personalizada.
+          </p>
+          <p className="max-w-2xl mx-auto">
+            Este site não é afiliado ao Facebook ou à Meta Inc. Resultados podem variar de pessoa para pessoa.
+          </p>
+          <p className="max-w-2xl mx-auto">
+            Seus dados estão protegidos: nunca enviamos spam ou compartilhamos informações com terceiros.
+          </p>
         </div>
       </footer>
     </div>
