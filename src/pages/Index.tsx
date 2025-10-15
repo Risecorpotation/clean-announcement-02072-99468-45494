@@ -9,6 +9,21 @@ const Index = () => {
   const [isContentRevealed, setIsContentRevealed] = useState(false);
 
   useEffect(() => {
+    // Function to reveal content and persist state
+    const revealContentPermanently = (reason: string) => {
+      console.log(`Revelando conteúdo: ${reason}`);
+      setIsContentRevealed(true);
+      localStorage.setItem('riseContentRevealed', 'true');
+    };
+
+    // 1. Check if user has seen content before (localStorage)
+    const hasSeenBefore = localStorage.getItem('riseContentRevealed') === 'true';
+    if (hasSeenBefore) {
+      revealContentPermanently('Usuário retornando');
+      return;
+    }
+
+    // 2. Initialize VTurb player
     if (videoContainerRef.current) {
       // Inject VTurb video player
       videoContainerRef.current.innerHTML = `
@@ -22,12 +37,51 @@ const Index = () => {
       document.head.appendChild(script);
     }
 
-    // Reveal content after 1 minute and 40 seconds (100 seconds)
-    const timer = setTimeout(() => {
-      setIsContentRevealed(true);
+    // 3. Function to check VTurb player and set up event listeners
+    const checkVTurbPlayer = () => {
+      if (window.smartplayer?.instances?.length > 0) {
+        const playerInstance = window.smartplayer.instances[0];
+        
+        // Check if in "continue watching" mode
+        if (playerInstance.resume?.inResume) {
+          revealContentPermanently('Modo resume detectado');
+          return;
+        }
+
+        // Listen for video ended event
+        playerInstance.on('ended', () => {
+          revealContentPermanently('Vídeo completado');
+        });
+
+        // Listen for progress event (reveal at 90%)
+        playerInstance.on('progress', (data: any) => {
+          if (data?.progress >= 90) {
+            revealContentPermanently('90% do vídeo assistido');
+          }
+        });
+      } else {
+        // Player not loaded yet, try again
+        setTimeout(checkVTurbPlayer, 500);
+      }
+    };
+
+    // 4. Timer: Reveal after 1 minute and 40 seconds (100 seconds)
+    const originalTimer = setTimeout(() => {
+      revealContentPermanently('Timer padrão (1min40s)');
     }, 100000);
 
-    return () => clearTimeout(timer);
+    // 5. Fallback timer: Reveal after 2 minutes (120 seconds) for safety
+    const fallbackTimer = setTimeout(() => {
+      revealContentPermanently('Fallback timer (2min)');
+    }, 120000);
+
+    // Start checking for player
+    checkVTurbPlayer();
+
+    return () => {
+      clearTimeout(originalTimer);
+      clearTimeout(fallbackTimer);
+    };
   }, []);
   return (
     <div className="min-h-screen bg-background text-foreground">
